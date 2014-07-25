@@ -1,49 +1,48 @@
-def choose_good_gift(total_gifts, bag, accept_gift):
-    for gift in bag():
-        accept_gift()
-        return
+def checkio(data):
+    """
+    make stripe by scissors and glue
+    """
+    return ''
 
 
 if __name__ == '__main__':
     # This part is using only for self-checking and not necessary for auto-testing
-    from random import random, randint, uniform
+    def check_solution(func, data):
+        try:
+            solver = func(data[:])
+            stripe = eval(solver)
+            if any((type(stripe) != str,
+                    len(stripe) != sum(len(ribbon) for ribbon in data),
+                    any(a not in '01' for a in stripe),
+                    any(a == b for a, b in zip(stripe, stripe[1:])))):
+                return False
+            cuts = sum(a == b for ribbon in data for a, b in zip(ribbon, ribbon[1:]))
+            commutator = [[False] * len(ribbon) for ribbon in data]
+            data = ['0' * len(ribbon) for ribbon in data]
+            res = eval(solver)
+            if '1' in res:
+                return False
+            targets = []
+            for i, ribbon in enumerate(data):
+                ribbon = list(ribbon)
+                for j in range(len(ribbon)):
+                    ribbon[j] = '1'
+                    data[i] = ''.join(ribbon)
+                    res = eval(solver)
+                    if res.count('1') != 1:
+                        return False
+                    k = res.index('1')
+                    targets.append(k)
+                    commutator[i][j], ribbon[j] = k, '0'
+                data[i] = ''.join(ribbon)
+            targets.sort()
+            if targets != list(range(len(stripe))):
+                return False
+            for i, switches in enumerate(commutator):
+                for a, b in zip(switches, switches[1:]):
+                    cuts -= abs(a - b) != 1
+            return not cuts
+        except Exception:
+            return False
 
-    def priority_post_factum(gifts):
-        def do_accept():
-            if priority_post_factum.gift_value is None:
-                if priority_post_factum.idx < len(gifts):
-                    priority_post_factum.gift_value = gifts[priority_post_factum.idx]
-                else:
-                    print('Is that a joke - to say "accept" when'
-                          ' gift wasn\'t taken from the bag?')
-            else:
-                print('Sorry, you made your choice already.')
-
-        def gift_generator():
-            while priority_post_factum.idx:
-                priority_post_factum.idx -= 1
-                yield gifts[priority_post_factum.idx]
-
-        priority_post_factum.idx, priority_post_factum.gift_value = len(gifts), None
-        choose_good_gift(len(gifts), gift_generator, do_accept)
-        if priority_post_factum.gift_value is None:
-            print('Unfortunately, you did not choose anything.')
-            return len(gifts)
-        else:
-            return sum(priority_post_factum.gift_value < x for x in gifts)
-
-    def check_solution(bagscount):
-        standings = giftscount = bestgifts = 0
-        for i in range(bagscount):
-            gifts_in_bag = randint(10, 1000)
-            giftscount += gifts_in_bag
-            scale = (random() + random()) ** randint(0, 1024)
-            priority = priority_post_factum([uniform(0., scale) for _ in range(gifts_in_bag)])
-            standings += priority
-            bestgifts += not priority
-        print('You do won {:n} best gifts from {:n} bags with {:,} gifts!\n'
-              'It seems like for bags of {:n} gifts -\n'
-              'you would choose the second best gift, silver ;)'
-              .format(bestgifts, bagscount, giftscount, round(giftscount / standings) + 1))
-
-    check_solution(2000)
+    assert check_solution(checkio, ['11000101', '101']), 'Baisc sample'
