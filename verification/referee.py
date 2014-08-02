@@ -1,8 +1,5 @@
-ALL_OK = True, {"error_code": 100, "message": "All ok."}
-
-
-def checkcp(data, user_result):
-    return ALL_OK
+def checker(data, user_result):
+    return True, {'error_code': 100, 'message': 'good'}
 
 
 from checkio.signals import ON_CONNECT
@@ -21,6 +18,6 @@ api.add_listener(
             'python-27': unwrap_args,
             'python-3': unwrap_args,
         },
-        checker=checkcp,
-        function_name="checkio"
+        checker=checker,
+        function_name='checkio'
     ).on_ready)
